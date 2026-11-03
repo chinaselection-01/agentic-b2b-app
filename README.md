@@ -20,8 +20,17 @@ cd agentic-b2b-app
 node server.js          # 默认 http://localhost:3000
 ```
 
-可选：设 `OPENAI_API_KEY`（或 `OPENAI_BASE_URL` / `OPENAI_MODEL`）让回答升级成真 LLM 自然语言；
-不设则走离线关键词 stub，零配置也能演示全流程。
+LLM 接入（已验证 DeepSeek 可用）：复制 `.env.example` 为 `.env`，填入你的 key：
+
+```bash
+OPENAI_API_KEY=你的DeepSeekKey
+OPENAI_BASE_URL=https://api.deepseek.com
+OPENAI_MODEL=deepseek-chat
+```
+
+- 代码走 OpenAI 兼容协议，DeepSeek / OpenAI / 任意兼容端点都行。
+- 不设 key 则走离线关键词 stub，零配置也能演示全流程。
+- **`.env` 已在 `.gitignore` 中，key 不会进仓库。**
 
 ## 用法
 
