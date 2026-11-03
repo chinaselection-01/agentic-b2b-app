@@ -2,6 +2,17 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+// Minimal .env loader (no deps). Reads KEY=VALUE lines if .env exists.
+try {
+  const envPath = path.join(path.dirname(fileURLToPath(import.meta.url)), ".env");
+  if (fs.existsSync(envPath)) {
+    for (const line of fs.readFileSync(envPath, "utf8").split("\n")) {
+      const m = line.match(/^\s*([\w.-]+)\s*=\s*(.*)\s*$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+    }
+  }
+} catch {}
 import { listSellers, getSeller, createSeller } from "./lib/store.js";
 import { answerFromKB } from "./lib/agent.js";
 
