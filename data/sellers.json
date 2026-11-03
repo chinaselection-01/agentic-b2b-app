@@ -1,0 +1,37 @@
+{
+  "sellers": [
+    {
+      "id": "df0606c2f39b",
+      "token": "2c95edcf26b21719ec45fe26",
+      "name": "CedarHaus Coops",
+      "owner": "STWADD",
+      "contact": "bob@stwadd.com",
+      "offerings": [
+        "wooden chicken coop",
+        "pet house"
+      ],
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "kb": "# Products\n## DS2002 Medium Coop\n- Material: fir wood\n- MOQ: 100 sets\n- HS: 4421999090\n\n# Pricing\n- FOB Ningbo, 30% deposit\n- exact price confirmed by human",
+      "createdAt": "2026-11-03T06:18:16.625Z"
+    },
+    {
+      "id": "dc4de1defd2c",
+      "token": "b227d49fbaf55d3db99edef7",
+      "name": "CedarHaus Coops",
+      "owner": "STWADD",
+      "contact": "bob@stwadd.com",
+      "offerings": [
+        "wooden chicken coop"
+      ],
+      "languages": [
+        "en",
+        "zh"
+      ],
+      "kb": "# Products\n## DS2002 Medium Coop\n- Material: fir wood\n- MOQ: 100 sets\n\n# Pricing\n- FOB Ningbo, 30% deposit",
+      "createdAt": "2026-11-03T06:18:36.565Z"
+    }
+  ]
+}
