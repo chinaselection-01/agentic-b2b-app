@@ -1,164 +1,290 @@
-<!doctype html>
-<html lang="zh">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Agentic B2B — 智能体撮合</title>
+<title>智能体 B2B 撮合 · China Selection</title>
 <style>
-  :root { --bg:#f1efea; --card:#fff; --line:#d3d1c7; --ink:#2c2c2a; --muted:#888780; --blue:#185fa5; --green:#3b6d11; --amber:#854f0b; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
-  header { padding:18px 20px; border-bottom:1px solid var(--line); background:#fff; }
-  header h1 { margin:0; font-size:17px; font-weight:600; }
-  header p { margin:4px 0 0; color:var(--muted); font-size:13px; }
-  .tabs { display:flex; gap:8px; padding:14px 20px 0; }
-  .tab { padding:9px 16px; border:1px solid var(--line); border-radius:10px 10px 0 0; background:#e9e7e0; cursor:pointer; font-size:14px; }
-  .tab.active { background:#fff; border-bottom-color:#fff; font-weight:600; }
-  .panel { display:none; padding:20px; max-width:880px; margin:0 auto; }
+  :root { --bg:#0f172a; --card:#1e293b; --line:#334155; --fg:#e2e8f0; --muted:#94a3b8; --acc:#38bdf8; --ok:#34d399; --warn:#fbbf24; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background:var(--bg); color:var(--fg); }
+  header { padding:16px 20px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; }
+  header .sub { color:var(--muted); font-size:13px; }
+  .tabs { margin-left:auto; display:flex; gap:8px; }
+  .tabs button { background:var(--card); color:var(--fg); border:1px solid var(--line); padding:8px 16px; border-radius:8px; cursor:pointer; font-size:14px; }
+  .tabs button.active { background:var(--acc); color:#04263a; border-color:var(--acc); font-weight:600; }
+  main { max-width:960px; margin:0 auto; padding:20px; }
+  .panel { display:none; }
   .panel.active { display:block; }
-  label { display:block; font-size:13px; margin:12px 0 4px; color:var(--ink); }
-  input, textarea { width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:8px; font-size:14px; font-family:inherit; }
-  textarea { min-height:140px; resize:vertical; }
-  button { margin-top:14px; padding:10px 18px; background:var(--blue); color:#fff; border:0; border-radius:8px; font-size:14px; cursor:pointer; }
-  button.ghost { background:#e9e7e0; color:var(--ink); }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:16px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+  input, textarea { width:100%; background:#0b1426; border:1px solid var(--line); color:var(--fg); border-radius:8px; padding:10px; font-size:14px; font-family:inherit; }
+  textarea { min-height:150px; resize:vertical; }
+  button.primary { background:var(--acc); color:#04263a; border:none; padding:11px 18px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; margin-top:12px; }
+  button.ghost { background:transparent; color:var(--muted); border:1px solid var(--line); padding:8px 14px; border-radius:8px; cursor:pointer; font-size:13px; }
+  button.danger { background:transparent; color:#f87171; border:1px solid #7f1d1d; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:13px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > div { flex:1; min-width:200px; }
   .hint { font-size:12px; color:var(--muted); margin-top:4px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; }
-  .scard { background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; cursor:pointer; }
-  .scard h3 { margin:0 0 4px; font-size:15px; }
-  .scard .owner { color:var(--muted); font-size:12px; }
-  .scard .tags { margin-top:8px; font-size:12px; color:var(--blue); }
-  .chat { border:1px solid var(--line); border-radius:12px; background:#fff; margin-top:14px; padding:14px; }
-  .msg { padding:9px 12px; border-radius:10px; margin:8px 0; max-width:85%; font-size:14px; white-space:pre-wrap; }
-  .msg.me { background:var(--blue); color:#fff; margin-left:auto; }
-  .msg.bot { background:#eef1f4; }
-  .badge { display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; background:#fbeed7; color:var(--amber); margin-left:8px; }
-  .ok { background:#eaf3de; color:var(--green); padding:10px 12px; border-radius:8px; font-size:13px; margin-top:12px; }
-  a { color:var(--blue); }
+  .badge { display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; background:#0b1426; border:1px solid var(--line); color:var(--muted); margin-right:6px; }
+  .badge.human { background:#3b2f0b; border-color:#92740f; color:var(--warn); }
+  .seller-card { display:flex; align-items:center; gap:12px; }
+  .seller-card .info { flex:1; }
+  .seller-card .name { font-weight:600; }
+  .seller-card .meta { color:var(--muted); font-size:13px; margin-top:2px; }
+  .msg { padding:10px 12px; border-radius:10px; margin:8px 0; max-width:85%; font-size:14px; line-height:1.5; white-space:pre-wrap; }
+  .msg.user { background:var(--acc); color:#04263a; margin-left:auto; }
+  .msg.bot { background:#0b1426; border:1px solid var(--line); }
+  .chatbox { background:#0b1426; border:1px solid var(--line); border-radius:12px; padding:14px; min-height:260px; max-height:380px; overflow-y:auto; }
+  .chat-input { display:flex; gap:8px; margin-top:10px; }
+  .chat-input input { flex:1; }
+  .token-box { background:#0b1426; border:1px dashed var(--line); border-radius:8px; padding:10px; font-family:monospace; font-size:13px; word-break:break-all; margin-top:8px; }
+  .ok { color:var(--ok); } .err { color:#f87171; }
+  .muted { color:var(--muted); font-size:13px; }
 </style>
 </head>
 <body>
 <header>
-  <h1>Agentic B2B 撮合平台</h1>
-  <p>卖家填表即上线智能体 · 买家搜到直接聊 · 两边都是 AI</p>
+  <div>
+    <h1>智能体 B2B 撮合</h1>
+    <div class="sub">China Selection · 卖家填表即上线 AI，买家搜到直聊</div>
+  </div>
+  <div class="tabs">
+    <button id="tab-seller" class="active" onclick="switchTab('seller')">我是卖家</button>
+    <button id="tab-buyer" onclick="switchTab('buyer')">我是买家</button>
+  </div>
 </header>
 
-<div class="tabs">
-  <div class="tab active" data-t="seller">我是卖家</div>
-  <div class="tab" data-t="buyer">我是买家</div>
-</div>
+<main>
+  <!-- 卖家面板 -->
+  <section id="panel-seller" class="panel active">
+    <div class="card">
+      <h3 style="margin:0 0 4px">我的智能体</h3>
+      <p class="muted">用手机号 + 邀请码注册后，你的智能体立刻上线；管理码（token）是凭证，请保存，换设备登录要用。</p>
+      <div id="my-agents"></div>
+    </div>
 
-<section class="panel active" id="seller">
-  <label>公司 / 店铺名称</label>
-  <input id="s-name" placeholder="CedarHaus Wooden Coops" />
-  <label>主体 / 负责人</label>
-  <input id="s-owner" placeholder="Yongkang STWADD HOUSEWARE CO.,LTD" />
-  <label>联系邮箱</label>
-  <input id="s-contact" placeholder="bob@stwadd.com" />
-  <label>卖什么（逗号分隔）</label>
-  <input id="s-offerings" placeholder="wooden chicken coop, pet house" />
-  <label>支持语言（逗号分隔）</label>
-  <input id="s-langs" placeholder="en, zh" value="en, zh" />
-  <label>产品知识库（markdown，越详细买家问得越准）</label>
-  <textarea id="s-kb"># Products
-## DS2001 Wooden Chicken Coop
-- Material: solid fir wood
-- MOQ: 100 sets
-- HS: 4421999090
+    <div class="card">
+      <h3 id="form-title" style="margin:0 0 8px">上线新智能体</h3>
+      <div class="row">
+        <div>
+          <label>智能体名称 *</label>
+          <input id="f-name" placeholder="如 CedarHaus 木质鸡舍" />
+        </div>
+        <div>
+          <label>主体 / 公司</label>
+          <input id="f-owner" placeholder="如 永康市圣瓦达日用品有限公司" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>联系邮箱 *</label>
+          <input id="f-contact" placeholder="bob@stwadd.com" />
+        </div>
+        <div>
+          <label>卖什么（逗号分隔）*</label>
+          <input id="f-offerings" placeholder="木质鸡笼, 鸡舍, 产蛋箱" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>支持语言（逗号分隔）</label>
+          <input id="f-languages" placeholder="zh, en" value="zh, en" />
+        </div>
+        <div>
+          <label>手机号 *（注册闸门）</label>
+          <input id="f-phone" placeholder="13800000000" />
+        </div>
+      </div>
+      <label>邀请码 *（见视频号简介）</label>
+      <input id="f-invite" placeholder="邀请码" />
+      <label>知识库（Markdown，越详细 AI 答得越准）*</label>
+      <textarea id="f-kb" placeholder="# 产品&#10;## 型号 A&#10;- 材质：&#10;- 起订量 MOQ：&#10;&#10;# 价格与条款&#10;- 具体单价由人工确认"></textarea>
+      <div id="form-msg" class="hint"></div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button class="primary" id="submit-btn" onclick="submitForm()">上线智能体</button>
+        <button class="ghost" id="cancel-btn" style="display:none" onclick="cancelEdit()">取消编辑</button>
+      </div>
+      <div id="token-box" style="display:none">
+        <label>你的管理码（请复制保存）</label>
+        <div class="token-box" id="token-text"></div>
+      </div>
+    </div>
+  </section>
 
-# Pricing
-- FOB Ningbo, 30% deposit, 70% before shipment
-- Exact unit price confirmed by human after MOQ is known</textarea>
-  <div class="hint">提交后你的智能体立即上线，会拿到一张「能力卡片」链接，可贴在网站 / 发群里 / 给别的买家 Agent 调用。</div>
-  <button id="s-submit">上线我的智能体</button>
-  <div id="s-result"></div>
-</section>
-
-<section class="panel" id="buyer">
-  <h3 style="margin:0 0 4px;font-size:15px;">在售卖家（智能体目录）</h3>
-  <p class="hint">点一个卖家即可用 AI 直接询盘。对方智能体会从它的知识库回答；涉及价格/合同会转人工。</p>
-  <div class="grid" id="b-list"></div>
-  <div class="chat" id="b-chat" style="display:none;">
-    <div id="b-title" style="font-weight:600;margin-bottom:6px;"></div>
-    <div id="b-msgs"></div>
-    <input id="b-input" placeholder="输入你的采购问题，回车发送…" style="margin-top:10px;" />
-  </div>
-</section>
+  <!-- 买家面板 -->
+  <section id="panel-buyer" class="panel">
+    <div class="card">
+      <h3 style="margin:0 0 4px">在售智能体</h3>
+      <p class="muted">点一个开始对话，对方的 AI 会从它的知识库回答；涉及价格/合同会自动转人工。</p>
+      <div id="directory"></div>
+    </div>
+    <div class="card" id="chat-card" style="display:none">
+      <h3 id="chat-title" style="margin:0 0 8px"></h3>
+      <div class="chatbox" id="chatbox"></div>
+      <div class="chat-input">
+        <input id="chat-input" placeholder="输入你的询盘，如：推荐一款养5只鸡的鸡舍，多久发货？" onkeydown="if(event.key==='Enter')sendInquiry()" />
+        <button class="primary" onclick="sendInquiry()">发送</button>
+      </div>
+    </div>
+  </section>
+</main>
 
 <script>
-  const $ = (id) => document.getElementById(id);
-  document.querySelectorAll(".tab").forEach((t) => {
-    t.onclick = () => {
-      document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
-      document.querySelectorAll(".panel").forEach((x) => x.classList.remove("active"));
-      t.classList.add("active");
-      $(t.dataset.t).classList.add("active");
-      if (t.dataset.t === "buyer") loadSellers();
-    };
-  });
+const LS_KEY = "b2b_my_agents";
+let myAgents = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+let editing = null; // {id, token}
 
-  // ---- Seller: register ----
-  $("s-submit").onclick = async () => {
-    const body = {
-      name: $("s-name").value,
-      owner: $("s-owner").value,
-      contact: $("s-contact").value,
-      offerings: $("s-offerings").value,
-      languages: $("s-langs").value,
-      kb: $("s-kb").value,
-    };
-    if (!body.name) return alert("请填名称");
-    const r = await fetch("/api/sellers", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-    }).then((x) => x.json());
-    $("s-result").innerHTML =
-      `<div class="ok">✅ 已上线！你的智能体能力卡片：<br><a href="${r.cardUrl}" target="_blank">${r.cardUrl}</a><br><span class="hint">把这个链接发出去，买家 Agent 就能找到你。</span></div>`;
-  };
+function switchTab(t) {
+  document.getElementById("panel-seller").classList.toggle("active", t === "seller");
+  document.getElementById("panel-buyer").classList.toggle("active", t === "buyer");
+  document.getElementById("tab-seller").classList.toggle("active", t === "seller");
+  document.getElementById("tab-buyer").classList.toggle("active", t === "buyer");
+  if (t === "buyer") loadDirectory();
+}
+function saveAgents() { localStorage.setItem(LS_KEY, JSON.stringify(myAgents)); }
 
-  // ---- Buyer: list + chat ----
-  let current = null;
-  async function loadSellers() {
-    const list = await fetch("/api/sellers").then((x) => x.json());
-    const el = $("b-list");
-    el.innerHTML = "";
-    if (!list.length) { el.innerHTML = '<p class="hint">还没有卖家上线。</p>'; return; }
-    list.forEach((s) => {
-      const d = document.createElement("div");
-      d.className = "scard";
-      d.innerHTML = `<h3>${s.name}</h3><div class="owner">${s.owner || ""}</div><div class="tags">${s.offerings.join(" · ")}</div>`;
-      d.onclick = () => openChat(s);
-      el.appendChild(d);
-    });
-  }
-  function openChat(s) {
-    current = s;
-    $("b-chat").style.display = "block";
-    $("b-title").textContent = "与 " + s.name + " 的智能体对话";
-    $("b-msgs").innerHTML = "";
-    $("b-input").value = "";
-    $("b-input").focus();
-  }
-  $("b-input").onkeydown = async (e) => {
-    if (e.key !== "Enter" || !current) return;
-    const q = $("b-input").value.trim();
-    if (!q) return;
-    addMsg(q, "me");
-    $("b-input").value = "";
-    const r = await fetch(`/api/sellers/${current.id}/inquire`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ from: "buyer-web", query: q, locale: "zh" }),
-    }).then((x) => x.json());
-    addMsg(r.answer + (r.needsHuman ? '\n\n⚠️ 需人工跟进，联系：' + current.contact : ""), "bot", r.needsHuman);
+async function api(method, path, body) {
+  const opt = { method, headers: {} };
+  if (body) { opt.headers["content-type"] = "application/json"; opt.body = JSON.stringify(body); }
+  const r = await fetch(path, opt);
+  let data = {};
+  try { data = await r.json(); } catch {}
+  return { status: r.status, data };
+}
+
+// ---- 我的智能体 ----
+function renderMyAgents() {
+  const box = document.getElementById("my-agents");
+  if (!myAgents.length) { box.innerHTML = '<p class="muted">还没有智能体，填下方表单上线一个。</p>'; return; }
+  box.innerHTML = myAgents.map(a => `
+    <div class="card" style="margin-top:10px">
+      <div class="seller-card">
+        <div class="info">
+          <div class="name">${esc(a.name)}</div>
+          <div class="meta">ID: ${a.id}</div>
+        </div>
+        <button class="ghost" onclick="startEdit('${a.id}')">编辑</button>
+        <button class="danger" onclick="removeAgent('${a.id}')">删除</button>
+      </div>
+    </div>`).join("");
+}
+async function startEdit(id) {
+  const a = myAgents.find(x => x.id === id); if (!a) return;
+  const { data } = await api("GET", `/api/sellers/${id}?token=${a.token}`);
+  if (!data || data.error) { alert("加载失败"); return; }
+  editing = { id, token: a.token };
+  document.getElementById("f-name").value = data.name || "";
+  document.getElementById("f-owner").value = data.owner || "";
+  document.getElementById("f-contact").value = data.contact || "";
+  document.getElementById("f-offerings").value = (data.offerings || []).join(", ");
+  document.getElementById("f-languages").value = (data.languages || []).join(", ");
+  document.getElementById("f-phone").value = data.phone || "";
+  document.getElementById("f-kb").value = data.kb || "";
+  document.getElementById("f-invite").value = "";
+  document.getElementById("form-title").textContent = "编辑智能体";
+  document.getElementById("submit-btn").textContent = "保存修改";
+  document.getElementById("cancel-btn").style.display = "";
+  document.getElementById("token-box").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function cancelEdit() {
+  editing = null;
+  document.getElementById("form-title").textContent = "上线新智能体";
+  document.getElementById("submit-btn").textContent = "上线智能体";
+  document.getElementById("cancel-btn").style.display = "none";
+  ["f-name","f-owner","f-contact","f-offerings","f-languages","f-phone","f-invite","f-kb"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("f-languages").value = "zh, en";
+}
+async function removeAgent(id) {
+  const a = myAgents.find(x => x.id === id); if (!a) return;
+  if (!confirm("确定删除这个智能体？删除后买家将无法再找到它。")) return;
+  const { status } = await api("DELETE", `/api/sellers/${id}`, { token: a.token });
+  if (status === 200) {
+    myAgents = myAgents.filter(x => x.id !== id);
+    saveAgents(); renderMyAgents();
+  } else alert("删除失败（token 不符或已不存在）");
+}
+
+async function submitForm() {
+  const msg = document.getElementById("form-msg");
+  const payload = {
+    name: document.getElementById("f-name").value.trim(),
+    owner: document.getElementById("f-owner").value.trim(),
+    contact: document.getElementById("f-contact").value.trim(),
+    offerings: document.getElementById("f-offerings").value.trim(),
+    languages: document.getElementById("f-languages").value.trim(),
+    phone: document.getElementById("f-phone").value.trim(),
+    inviteCode: document.getElementById("f-invite").value.trim(),
+    kb: document.getElementById("f-kb").value,
   };
-  function addMsg(text, who, flag) {
-    const d = document.createElement("div");
-    d.className = "msg " + who;
-    d.textContent = text;
-    if (flag) { const b = document.createElement("span"); b.className = "badge"; b.textContent = "转人工"; d.appendChild(b); }
-    $("b-msgs").appendChild(d);
+  if (!payload.name || !payload.contact || !payload.offerings || !payload.phone || !payload.kb) {
+    msg.innerHTML = '<span class="err">带 * 的字段都要填。</span>'; return;
   }
+  if (editing) {
+    const { status, data } = await api("PUT", `/api/sellers/${editing.id}`, { token: editing.token, ...payload });
+    if (status === 200) {
+      const a = myAgents.find(x => x.id === editing.id); if (a) a.name = payload.name;
+      saveAgents(); renderMyAgents(); cancelEdit();
+      msg.innerHTML = '<span class="ok">已保存。</span>';
+    } else msg.innerHTML = '<span class="err">' + (data.error || "保存失败") + '</span>';
+  } else {
+    const { status, data } = await api("POST", "/api/sellers", payload);
+    if (status === 201) {
+      if (!myAgents.find(x => x.id === data.id)) myAgents.push({ id: data.id, token: data.token, name: data.name });
+      saveAgents(); renderMyAgents();
+      document.getElementById("token-text").textContent = data.token;
+      document.getElementById("token-box").style.display = "";
+      cancelEdit();
+      msg.innerHTML = '<span class="ok">上线成功！上方已出现你的智能体，管理码请复制保存。</span>';
+    } else msg.innerHTML = '<span class="err">' + (data.error || "注册失败") + '</span>';
+  }
+}
+
+// ---- 买家目录 + 对话 ----
+let currentSeller = null;
+async function loadDirectory() {
+  const box = document.getElementById("directory");
+  const { data } = await api("GET", "/api/sellers");
+  if (!data || !data.length) { box.innerHTML = '<p class="muted">暂无在售智能体。</p>'; return; }
+  box.innerHTML = data.map(s => `
+    <div class="card" style="margin-top:10px; cursor:pointer" onclick="openChat('${s.id}','${esc(s.name)}')">
+      <div class="name" style="font-weight:600">${esc(s.name)}</div>
+      <div class="meta muted" style="font-size:13px; margin:4px 0">${esc(s.owner || "")}</div>
+      <div>${(s.offerings||[]).map(o=>`<span class="badge">${esc(o)}</span>`).join("")}</div>
+      <div style="margin-top:6px">${(s.languages||[]).map(l=>`<span class="badge">${esc(l)}</span>`).join("")}</div>
+    </div>`).join("");
+}
+function openChat(id, name) {
+  currentSeller = { id, name };
+  document.getElementById("chat-title").textContent = "与 " + name + " 的 AI 对话";
+  document.getElementById("chat-card").style.display = "";
+  document.getElementById("chatbox").innerHTML = "";
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+async function sendInquiry() {
+  const inp = document.getElementById("chat-input");
+  const q = inp.value.trim(); if (!q || !currentSeller) return;
+  const box = document.getElementById("chatbox");
+  box.appendChild(divMsg("user", q));
+  inp.value = "";
+  const { data } = await api("POST", `/api/sellers/${currentSeller.id}/inquire`, { from: "buyer-web", query: q, locale: "zh" });
+  let ans = data.answer || "（无回答）";
+  if (data.needsHuman) ans += "\n\n[已转人工，卖家会跟进，联系方式见上方智能体信息]";
+  box.appendChild(divMsg("bot", ans, data.needsHuman));
+  box.scrollTop = box.scrollHeight;
+}
+function divMsg(role, text, human) {
+  const d = document.createElement("div");
+  d.className = "msg " + role;
+  d.textContent = text;
+  if (human) { const b = document.createElement("div"); b.style.marginTop="6px"; b.innerHTML = '<span class="badge human">需人工跟进</span>'; d.appendChild(b); }
+  return d;
+}
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+renderMyAgents();
 </script>
 </body>
 </html>

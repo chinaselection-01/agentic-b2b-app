@@ -13,12 +13,24 @@ try {
     }
   }
 } catch {}
-import { listSellers, getSeller, createSeller } from "./lib/store.js";
+import {
+  listSellers,
+  getSeller,
+  createSeller,
+  updateSeller,
+  deleteSeller,
+  deleteAll,
+  seedIfEmpty,
+} from "./lib/store.js";
 import { answerFromKB } from "./lib/agent.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, "public");
 const PORT = process.env.PORT || 3000;
+const INVITE_CODES = (process.env.INVITE_CODES || "chinaselection")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -67,15 +79,70 @@ const server = http.createServer(async (req, res) => {
   const p = url.pathname;
 
   // ---- API ----
+
+  // Seller directory (public)
   if (p === "/api/sellers" && req.method === "GET") {
     return send(res, 200, listSellers());
   }
 
+  // Register a seller — gated by phone + invite code
   if (p === "/api/sellers" && req.method === "POST") {
     const body = await readBody(req);
-    if (!body.name) return send(res, 400, { error: "name required" });
+    if (!body.name) return send(res, 400, { error: "请填写智能体名称" });
+    const phone = String(body.phone || "").trim();
+    if (!/^1[3-9]\d{9}$/.test(phone)) return send(res, 400, { error: "请输入有效的手机号" });
+    const code = String(body.inviteCode || "").trim();
+    if (!INVITE_CODES.includes(code)) return send(res, 400, { error: "邀请码不正确" });
     const s = createSeller(body);
-    return send(res, 201, { id: s.id, token: s.token, cardUrl: `${base}/api/card/${s.id}` });
+    return send(res, 201, {
+      id: s.id,
+      token: s.token,
+      name: s.name,
+      cardUrl: `${base}/api/card/${s.id}`,
+    });
+  }
+
+  // Admin: clear all sellers (demo reset) — protected by ADMIN_KEY
+  if (p === "/api/sellers" && req.method === "DELETE") {
+    const r = deleteAll(url.searchParams.get("key") || "");
+    if (r.error) return send(res, 403, r);
+    return send(res, 200, r);
+  }
+
+  // Admin: seed demo sellers — protected by ADMIN_KEY
+  if (p === "/api/admin/seed" && req.method === "POST") {
+    if (url.searchParams.get("key") !== process.env.ADMIN_KEY) return send(res, 403, { error: "forbidden" });
+    const n = seedIfEmpty();
+    return send(res, 200, { seeded: n });
+  }
+
+  // Single seller: GET (public or full w/ token), PUT (update), DELETE (remove)
+  const single = p.match(/^\/api\/sellers\/([\w]+)$/);
+  if (single) {
+    const s = getSeller(single[1]);
+    if (!s) return send(res, 404, { error: "not found" });
+    if (req.method === "GET") {
+      const token = url.searchParams.get("token") || "";
+      if (token && token === s.token) return send(res, 200, s); // full incl. kb
+      const { kb, token: t, ...pub } = s;
+      return send(res, 200, pub);
+    }
+    if (req.method === "PUT") {
+      const body = await readBody(req);
+      const token = body.token || url.searchParams.get("token") || "";
+      const r = updateSeller(single[1], token, body);
+      if (r.error === "forbidden") return send(res, 403, r);
+      if (r.error) return send(res, 404, r);
+      return send(res, 200, { id: r.seller.id, name: r.seller.name, cardUrl: `${base}/api/card/${r.seller.id}` });
+    }
+    if (req.method === "DELETE") {
+      const body = await readBody(req);
+      const token = body.token || url.searchParams.get("token") || "";
+      const r = deleteSeller(single[1], token);
+      if (r.error === "forbidden") return send(res, 403, r);
+      if (r.error) return send(res, 404, r);
+      return send(res, 200, r);
+    }
   }
 
   const cardMatch = p.match(/^\/api\/card\/([\w]+)$/);
@@ -104,12 +171,19 @@ const server = http.createServer(async (req, res) => {
   let filePath = path.join(PUBLIC, p === "/" ? "index.html" : p);
   if (!filePath.startsWith(PUBLIC)) return send(res, 403, { error: "forbidden" });
   if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
-    // SPA fallback
     filePath = path.join(PUBLIC, "index.html");
   }
   const ext = path.extname(filePath);
   send(res, 200, fs.readFileSync(filePath), MIME[ext] || "application/octet-stream");
 });
+
+// Seed demo data on first boot if the directory is empty
+try {
+  const n = seedIfEmpty();
+  if (n > 0) console.log(`[agentic-b2b-app] seeded ${n} demo sellers`);
+} catch (e) {
+  console.error("[agentic-b2b-app] seed skipped:", e.message);
+}
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`[agentic-b2b-app] running on http://0.0.0.0:${PORT}`);
