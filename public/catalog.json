@@ -1,0 +1,62 @@
+{
+  "schema": "agentic-b2b-catalog/1.0",
+  "publisher": {
+    "name": "China Selection",
+    "operator": "Yongkang STWADD Houseware Co., Ltd (圣瓦达日用品有限公司)",
+    "site": "https://china-selection.com",
+    "hub": "https://hub.china-selection.com",
+    "contact": "bob@stwadd.com"
+  },
+  "note": "Prices, MOQ and lead times are confirmed by a human after model, quantity and destination port are known. Quote-related inquiries are always routed to a human.",
+  "lines": [
+    {
+      "brand": "CedarHaus",
+      "category": "Wooden chicken coops / pet houses",
+      "hsCode": "4421999090",
+      "origin": "Jing'an County, Yichun, Jiangxi, China (OEM: Jing'an Jiayu Bamboo & Wood Products)",
+      "materials": ["Fir / cedar solid wood", "water-based eco paint", "asphalt anti-slip roof", "fox-proof wire mesh base"],
+      "models": [
+        { "sku": "DS2001", "name": "Small coop", "capacity": "2-3 hens" },
+        { "sku": "DS2002", "name": "Medium coop (flagship)", "capacity": "4-6 hens" },
+        { "sku": "DS2004", "name": "Large coop", "capacity": "8-10 hens" },
+        { "sku": "DS2005", "name": "Coop + run combo", "capacity": "coop + outdoor pen" }
+      ],
+      "incoterms": "FOB Ningbo / Shanghai",
+      "packaging": "Flat-packed CKD, self-assembly",
+      "moq": "human-confirm",
+      "price": "human-confirm"
+    },
+    {
+      "brand": "Navigator Pet",
+      "category": "Cat trees / cat furniture",
+      "hsCode": "6307900090",
+      "origin": "Liangshan County, Jining, Shandong, China",
+      "materials": ["Sisal-wrapped posts", "MDF / solid wood base", "plush / corduroy cover (removable washable)", "hanging toys"],
+      "models": [
+        { "sku": "DS375", "name": "Small freestanding (60-90cm)", "useCase": "apartment, single cat" },
+        { "sku": "DS376", "name": "Medium-large (100-150cm), multi-tier with condo", "useCase": "multi-cat home" }
+      ],
+      "customization": ["color", "tier count", "logo silkscreen"],
+      "incoterms": "FOB Ningbo / Qingdao",
+      "packaging": "Compressed flat carton",
+      "moq": "human-confirm",
+      "price": "human-confirm"
+    },
+    {
+      "brand": "SSMugs",
+      "category": "Insulated stainless steel tumblers / bottles",
+      "hsCode": "96170010",
+      "origin": "Yongkang, Jinhua, Zhejiang, China (drinkware manufacturing belt)",
+      "materials": ["316 or 304 food-grade stainless steel inner", "double-wall vacuum insulation", "silicone seal ring", "optional straw / flip / direct lid"],
+      "specs": {
+        "capacity": ["350ml", "500ml", "750ml", "1000ml"],
+        "keepWarm": "6-12h",
+        "keepCold": "12-24h"
+      },
+      "compliance": ["FDA / LFGB food-contact base (per destination)"],
+      "incoterms": "FOB Ningbo",
+      "moq": "500-1000 pcs / design for OEM",
+      "price": "human-confirm"
+    }
+  ]
+}

@@ -37,10 +37,18 @@ const MIME = {
   ".css": "text/css; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
 };
 
 function send(res, code, body, type = "application/json") {
-  res.writeHead(code, { "content-type": type });
+  res.writeHead(code, {
+    "content-type": type,
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
+    "Access-Control-Allow-Headers": "content-type",
+  });
+  if (Buffer.isBuffer(body)) return res.end(body);
   res.end(typeof body === "string" ? body : JSON.stringify(body));
 }
 
@@ -165,6 +173,13 @@ const server = http.createServer(async (req, res) => {
       needsHuman: reply.needsHuman,
       sources: reply.sources,
     });
+  }
+
+  // Machine-readable product catalog (GEO for external buyer agents)
+  if (p === "/api/catalog.json" && req.method === "GET") {
+    const p2 = path.join(PUBLIC, "catalog.json");
+    if (!fs.existsSync(p2)) return send(res, 404, { error: "not found" });
+    return send(res, 200, fs.readFileSync(p2), "application/json");
   }
 
   // ---- static ----
