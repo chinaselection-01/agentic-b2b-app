@@ -111,6 +111,6 @@ const server = http.createServer(async (req, res) => {
   send(res, 200, fs.readFileSync(filePath), MIME[ext] || "application/octet-stream");
 });
 
-server.listen(PORT, () => {
-  console.log(`[agentic-b2b-app] running on http://localhost:${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`[agentic-b2b-app] running on http://0.0.0.0:${PORT}`);
 });
