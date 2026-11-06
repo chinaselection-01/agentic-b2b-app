@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://hub.china-selection.com/</loc>
+    <loc>https://rfq.china-selection.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://hub.china-selection.com/#buyer</loc>
+    <loc>https://rfq.china-selection.com/#buyer</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hub.china-selection.com/#seller</loc>
+    <loc>https://rfq.china-selection.com/#seller</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hub.china-selection.com/catalog.json</loc>
+    <loc>https://rfq.china-selection.com/catalog.json</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://hub.china-selection.com/llms.txt</loc>
+    <loc>https://rfq.china-selection.com/llms.txt</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
